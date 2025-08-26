@@ -13,7 +13,7 @@ public class Main {
 
         UsuarioController usuarioController = new UsuarioController();
         ContaController contaController = new ContaController();
-        CartaoController cartaoController = new CartaoController();
+        CartaoController cartaoController = new CartaoController(input);
         InvestimentoController investimentoController = new InvestimentoController();
 
         int opcao;
@@ -24,7 +24,7 @@ public class Main {
             System.out.println("3 - Criar Cartão");
             System.out.println("4 - Criar Investimento");
             System.out.println("5 - Operações Conta");
-            System.out.println("6 - Operações Cartão");
+            System.out.println("6 - Gerenciar Cartões");
             System.out.println("7 - Operações Investimento");
             System.out.println("0 - Sair");
             System.out.print("Opção: ");
@@ -34,9 +34,13 @@ public class Main {
             switch (opcao) {
                 case 1 -> usuarioController.criarUsuario(input);
                 case 2 -> contaController.criarConta(input);
-                case 3 -> cartaoController.criarCartao(input);
+                case 3 -> cartaoController.criarCartao();
                 case 4 -> investimentoController.criarInvestimento(input);
+<<<<<<< HEAD
                 case 5 -> contaController.operacoes();
+=======
+                case 6 -> cartaoController.gerenciarCartoes();
+>>>>>>> 0b9d1ba999574e0e3091dfc27f3527193e388118
                 case 0 -> System.out.println("Saindo...");
                 default -> System.out.println("Opção inválida!");
             }
