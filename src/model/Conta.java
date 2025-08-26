@@ -24,7 +24,7 @@ public class Conta {
         this.saldo = saldo;
     }
 
-    public int getNumero() {
+    public Integer getNumero() {
         return numero;
     }
 

@@ -36,6 +36,7 @@ public class Main {
                 case 2 -> contaController.criarConta(input);
                 case 3 -> cartaoController.criarCartao(input);
                 case 4 -> investimentoController.criarInvestimento(input);
+                case 5 -> contaController.operacoes();
                 case 0 -> System.out.println("Saindo...");
                 default -> System.out.println("Opção inválida!");
             }
