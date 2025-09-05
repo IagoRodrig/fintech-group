@@ -5,6 +5,10 @@ public class Conta {
     private String agencia;
     private double saldo;
 
+    public Conta () {
+
+    }
+
     // Construtor
     public Conta(int numero, String agencia, double saldo) {
         this.numero = numero;
