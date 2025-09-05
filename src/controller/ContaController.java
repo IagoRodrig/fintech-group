@@ -73,4 +73,9 @@ public class ContaController {
 
         } while (!valida);
     }
+
+    public Conta getConta() {
+        return conta;
+    }
+
 }
