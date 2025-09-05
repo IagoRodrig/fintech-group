@@ -17,7 +17,7 @@ public class TransacaoController {
 
     private void checagemTransacao () {
         if (cf == 1) {
-            t = new Transacao(valor, data, numero, agencia); // agora usa atributos
+            t = new Transacao(valor, data, numero, agencia); 
             efetuarTransacao();
         } else if (cf == 2) {
             return;
