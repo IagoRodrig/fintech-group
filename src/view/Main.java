@@ -1,9 +1,6 @@
 package view;
 
-import controller.CartaoController;
-import controller.ContaController;
-import controller.InvestimentoController;
-import controller.UsuarioController;
+import controller.*;
 
 import java.util.Scanner;
 
@@ -15,6 +12,7 @@ public class Main {
         ContaController contaController = new ContaController();
         CartaoController cartaoController = new CartaoController(input);
         InvestimentoController investimentoController = new InvestimentoController();
+        TransacaoController transacaoController = new TransacaoController();
 
         int opcao;
         do {
@@ -25,7 +23,8 @@ public class Main {
             System.out.println("4 - Criar Investimento");
             System.out.println("5 - Operações Conta");
             System.out.println("6 - Gerenciar Cartões");
-            System.out.println("7 - Operações Investimento");
+            System.out.println("7 - Transação Bancária");
+            System.out.println("8 - Operações Investimento");
             System.out.println("0 - Sair");
             System.out.print("Opção: ");
             opcao = input.nextInt();
@@ -33,11 +32,15 @@ public class Main {
 
             switch (opcao) {
                 case 1 -> usuarioController.criarUsuario(input);
-                case 2 -> contaController.criarConta(input);
+                case 2 -> {
+                    contaController.criarConta(input);
+                    transacaoController.setConta(contaController.getConta());
+                }
                 case 3 -> cartaoController.criarCartao();
                 case 4 -> investimentoController.criarInvestimento(input);
                 case 5 -> contaController.operacoes();
                 case 6 -> cartaoController.gerenciarCartoes();
+                case 7 -> transacaoController.transacaoMenu();
                 case 0 -> System.out.println("Saindo...");
                 default -> System.out.println("Opção inválida!");
             }
