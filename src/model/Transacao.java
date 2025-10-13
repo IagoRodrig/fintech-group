@@ -1,51 +1,72 @@
 package model;
 
 public class Transacao {
-    private int numero;
-    private String agencia;
-    private int valor;
+    private int idTransacao;
+    private int idContaOrigem;
+    private int idContaDestino;
+    private double valor;
     private String data;
-    private String status;
 
-    public Transacao(int valor, String data, int numero, String agencia) {
+    public Transacao() {
+    }
+
+    // Construtor completo
+    public Transacao(int idTransacao, int idContaOrigem, int idContaDestino, double valor, String data) {
+        this.idTransacao = idTransacao;
+        this.idContaOrigem = idContaOrigem;
+        this.idContaDestino = idContaDestino;
         this.valor = valor;
         this.data = data;
-        this.numero = numero;
-        this.agencia = agencia;
-        this.status = "Pendente";
     }
 
+    // Construtor sem ID (para insert)
+    public Transacao(int idContaOrigem, int idContaDestino, double valor, String data) {
+        this.idContaOrigem = idContaOrigem;
+        this.idContaDestino = idContaDestino;
+        this.valor = valor;
+        this.data = data;
+    }
 
     public void exibirTransacao() {
-        System.out.println("=== Última Transação ===");
-        System.out.println("Conta: " + numero + " / Agência: " + agencia);
+        System.out.println("=== Transação ===");
+        System.out.println("ID: " + idTransacao);
+        System.out.println("Conta Origem: " + idContaOrigem);
+        System.out.println("Conta Destino: " + idContaDestino);
         System.out.println("Valor: " + valor);
         System.out.println("Data: " + data);
-        System.out.println("Status: " + status);
-        System.out.println("=======================");
+        System.out.println("=================");
     }
 
-    public int getNumero() {
-        return numero;
+    // Getters e Setters
+    public int getIdTransacao() {
+        return idTransacao;
     }
 
-    public void setNumero(int numero) {
-        this.numero = numero;
+    public void setIdTransacao(int idTransacao) {
+        this.idTransacao = idTransacao;
     }
 
-    public String getAgencia() {
-        return agencia;
+    public int getIdContaOrigem() {
+        return idContaOrigem;
     }
 
-    public void setAgencia(String agencia) {
-        this.agencia = agencia;
+    public void setIdContaOrigem(int idContaOrigem) {
+        this.idContaOrigem = idContaOrigem;
     }
 
-    public int getValor() {
+    public int getIdContaDestino() {
+        return idContaDestino;
+    }
+
+    public void setIdContaDestino(int idContaDestino) {
+        this.idContaDestino = idContaDestino;
+    }
+
+    public double getValor() {
         return valor;
     }
 
-    public void setValor(int valor) {
+    public void setValor(double valor) {
         this.valor = valor;
     }
 
@@ -57,7 +78,14 @@ public class Transacao {
         this.data = data;
     }
 
-    public String getStatus() { return status; }
-
-    public void setStatus(String status) { this.status = status; }
+    @Override
+    public String toString() {
+        return "Transacao{" +
+                "idTransacao=" + idTransacao +
+                ", idContaOrigem=" + idContaOrigem +
+                ", idContaDestino=" + idContaDestino +
+                ", valor=" + valor +
+                ", data='" + data + '\'' +
+                '}';
+    }
 }

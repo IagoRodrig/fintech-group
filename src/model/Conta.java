@@ -1,41 +1,93 @@
 package model;
 
 public class Conta {
-    private int numero;
-    private String agencia;
+    private int idConta;
+    private int idUsuario;
     private double saldo;
+    private String tipoConta;
+    private double valor;
+    private String data;
 
-    public Conta () {
-
+    public Conta() {
     }
 
-    // Construtor
-    public Conta(int numero, String agencia, double saldo) {
-        this.numero = numero;
-        this.agencia = agencia;
+    // Construtor completo
+    public Conta(int idConta, int idUsuario, double saldo, String tipoConta, double valor, String data) {
+        this.idConta = idConta;
+        this.idUsuario = idUsuario;
         this.saldo = saldo;
+        this.tipoConta = tipoConta;
+        this.valor = valor;
+        this.data = data;
     }
 
-    public void setNumero(int numero) {
-        this.numero = numero;
+    // Construtor sem ID (para insert)
+    public Conta(int idUsuario, double saldo, String tipoConta, double valor, String data) {
+        this.idUsuario = idUsuario;
+        this.saldo = saldo;
+        this.tipoConta = tipoConta;
+        this.valor = valor;
+        this.data = data;
     }
 
-    public void setAgencia(String agencia) {
-        this.agencia = agencia;
+    // Getters e Setters
+    public int getIdConta() {
+        return idConta;
+    }
+
+    public void setIdConta(int idConta) {
+        this.idConta = idConta;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public double getSaldo() {
+        return saldo;
     }
 
     public void setSaldo(double saldo) {
         this.saldo = saldo;
     }
 
-    public Integer getNumero() {
-        return numero;
+    public String getTipoConta() {
+        return tipoConta;
     }
 
-    public String getAgencia() {
-        return agencia;
+    public void setTipoConta(String tipoConta) {
+        this.tipoConta = tipoConta;
     }
-    public double getSaldo() {
-        return saldo;
+
+    public double getValor() {
+        return valor;
+    }
+
+    public void setValor(double valor) {
+        this.valor = valor;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "Conta{" +
+                "idConta=" + idConta +
+                ", idUsuario=" + idUsuario +
+                ", saldo=" + saldo +
+                ", tipoConta='" + tipoConta + '\'' +
+                ", valor=" + valor +
+                ", data='" + data + '\'' +
+                '}';
     }
 }
