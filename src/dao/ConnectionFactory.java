@@ -6,14 +6,13 @@ import java.sql.SQLException;
 
 /**
  * Classe responsável por gerenciar as conexões com o banco de dados Oracle
- * Padrão Singleton para garantir uma única instância
  */
 public class ConnectionFactory {
     
-    // Configurações de conexão Oracle FIAP
-    private static final String URL = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL";
-    private static final String USUARIO = "seu_usuario"; // SUBSTITUA pelo seu RM
-    private static final String SENHA = "sua_senha";     // SUBSTITUA pela sua senha
+    // Configurações Oracle FIAP
+    private static final String ORACLE_URL = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:ORCL";
+    private static final String ORACLE_USUARIO = "rm561399"; // Seu RM
+    private static final String ORACLE_SENHA = "131106";     // Sua senha
     
     /**
      * Obtém uma conexão com o banco de dados Oracle
@@ -24,9 +23,17 @@ public class ConnectionFactory {
         try {
             // Registra o driver JDBC do Oracle
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            return DriverManager.getConnection(URL, USUARIO, SENHA);
+            
+            // Estabelece a conexão
+            Connection conn = DriverManager.getConnection(ORACLE_URL, ORACLE_USUARIO, ORACLE_SENHA);
+            
+            System.out.println("✅ Conexão com Oracle estabelecida com sucesso!");
+            return conn;
+            
         } catch (ClassNotFoundException e) {
-            throw new SQLException("Driver Oracle JDBC não encontrado. Adicione ojdbc.jar ao projeto.", e);
+            throw new SQLException("❌ Driver Oracle JDBC não encontrado. Adicione ojdbc8.jar ao projeto.", e);
+        } catch (SQLException e) {
+            throw new SQLException("❌ Erro ao conectar com Oracle: " + e.getMessage(), e);
         }
     }
     
@@ -38,10 +45,33 @@ public class ConnectionFactory {
         if (connection != null) {
             try {
                 connection.close();
+                System.out.println("✅ Conexão fechada com sucesso!");
             } catch (SQLException e) {
-                System.err.println("Erro ao fechar conexão: " + e.getMessage());
+                System.err.println("❌ Erro ao fechar conexão: " + e.getMessage());
             }
         }
     }
+    
+    /**
+     * Retorna informações sobre o banco em uso
+     */
+    public static String getDatabaseInfo() {
+        return "Oracle Database (FIAP)";
+    }
+    
+    /**
+     * Testa a conexão com o banco
+     */
+    public static boolean testConnection() {
+        try (Connection conn = getConnection()) {
+            System.out.println("✅ Teste de conexão bem-sucedido!");
+            System.out.println("📊 Banco em uso: " + getDatabaseInfo());
+            System.out.println("🔗 URL: " + ORACLE_URL);
+            System.out.println("👤 Usuário: " + ORACLE_USUARIO);
+            return true;
+        } catch (SQLException e) {
+            System.err.println("❌ Falha no teste de conexão: " + e.getMessage());
+            return false;
+        }
+    }
 }
-

@@ -8,8 +8,18 @@ public class Cartao {
     private String validade;
     private double limiteCredito;
 
-    public Cartao() {
-    }
+//    public Cartao() {
+//    }
+
+    // Construtor completo
+//    public Cartao(int idCartao, int idConta, String tipoCartao, String numeroMascarado, String validade, double limiteCredito) {
+//        this.idCartao = idCartao;
+//        this.idConta = idConta;
+//        this.tipoCartao = tipoCartao;
+//        this.numeroMascarado = numeroMascarado;
+//        this.validade = validade;
+//        this.limiteCredito = limiteCredito;
+//    }
 
     // Construtor completo
     public Cartao(int idCartao, int idConta, String tipoCartao, String numeroMascarado, String validade, double limiteCredito) {

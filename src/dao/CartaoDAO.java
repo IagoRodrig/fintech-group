@@ -53,28 +53,27 @@ public class CartaoDAO {
      * @return true se inserido com sucesso, false caso contrário
      */
     public boolean insert(Cartao cartao) {
-        String sql = "INSERT INTO Cartao (id_cartao, id_conta, tipo_cartao, numero_mascarado, validade, limite_credito) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Cartao (id_conta, tipo_cartao, numero_mascarado, validade, limite_credito) " +
+                     "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, cartao.getIdCartao());
-            pstmt.setInt(2, cartao.getIdConta());
-            pstmt.setString(3, cartao.getTipoCartao());
-            pstmt.setString(4, cartao.getNumeroMascarado());
-            pstmt.setString(5, cartao.getValidade());
-            pstmt.setDouble(6, cartao.getLimiteCredito());
+            pstmt.setInt(1, cartao.getIdConta());
+            pstmt.setString(2, cartao.getTipoCartao());
+            pstmt.setString(3, cartao.getNumeroMascarado());
+            pstmt.setString(4, cartao.getValidade());
+            pstmt.setDouble(5, cartao.getLimiteCredito());
 
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Cartão inserido com sucesso! ID: " + cartao.getIdCartao());
+                System.out.println("✅ Cartão inserido com sucesso!");
                 return true;
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao inserir cartão no banco de dados:");
+            System.err.println("❌ Erro ao inserir cartão no banco de dados:");
             System.err.println("Mensagem: " + e.getMessage());
             System.err.println("Código do erro: " + e.getErrorCode());
             

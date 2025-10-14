@@ -2,7 +2,7 @@ package model;
 
 public class Investimento {
     private int idInvestimento;
-    private int idUsuario;
+    private String idUsuario;
     private String tipo;
     private double valorInvestido;
     private String dataAplicacao;
@@ -11,7 +11,7 @@ public class Investimento {
     }
 
     // Construtor completo
-    public Investimento(int idInvestimento, int idUsuario, String tipo, double valorInvestido, String dataAplicacao) {
+    public Investimento(int idInvestimento, String idUsuario, String tipo, double valorInvestido, String dataAplicacao) {
         this.idInvestimento = idInvestimento;
         this.idUsuario = idUsuario;
         this.tipo = tipo;
@@ -20,7 +20,7 @@ public class Investimento {
     }
 
     // Construtor sem ID (para insert)
-    public Investimento(int idUsuario, String tipo, double valorInvestido, String dataAplicacao) {
+    public Investimento(String idUsuario, String tipo, double valorInvestido, String dataAplicacao) {
         this.idUsuario = idUsuario;
         this.tipo = tipo;
         this.valorInvestido = valorInvestido;
@@ -36,11 +36,11 @@ public class Investimento {
         this.idInvestimento = idInvestimento;
     }
 
-    public int getIdUsuario() {
+    public String getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(int idUsuario) {
+    public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
 

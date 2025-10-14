@@ -6,7 +6,8 @@
 -- TABELA: Usuario
 -- ==================================================
 CREATE TABLE Usuario (
-    id_usuario NUMBER PRIMARY KEY,
+    id_usuario RAW(16) DEFAULT SYS_GUID() PRIMARY KEY,
+    nome_usuario VARCHAR2(25) UNIQUE NOT NULL,
     nome_completo VARCHAR2(100) NOT NULL,
     telefone VARCHAR2(20),
     senha VARCHAR2(100) NOT NULL,
@@ -18,11 +19,11 @@ CREATE TABLE Usuario (
 -- ==================================================
 CREATE TABLE Conta (
     id_conta NUMBER PRIMARY KEY,
-    id_usuario NUMBER NOT NULL,
+    id_usuario RAW(16) NOT NULL,
     saldo NUMBER(15,2) DEFAULT 0,
     tipo_conta VARCHAR2(50) NOT NULL,
     valor NUMBER(15,2) DEFAULT 0,
-    data VARCHAR2(50),
+    data_criacao DATE DEFAULT SYSDATE,
     CONSTRAINT fk_conta_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
@@ -43,11 +44,11 @@ CREATE TABLE Cartao (
 -- TABELA: Transacao
 -- ==================================================
 CREATE TABLE Transacao (
-    id_transacao NUMBER PRIMARY KEY,
+    id_transacao RAW(16) DEFAULT SYS_GUID() PRIMARY KEY,
     id_conta_origem NUMBER NOT NULL,
     id_conta_destino NUMBER,
     valor NUMBER(15,2) NOT NULL,
-    data VARCHAR2(50) NOT NULL,
+    data_transacao DATE DEFAULT SYSDATE,
     CONSTRAINT fk_transacao_origem FOREIGN KEY (id_conta_origem) REFERENCES Conta(id_conta),
     CONSTRAINT fk_transacao_destino FOREIGN KEY (id_conta_destino) REFERENCES Conta(id_conta)
 );
@@ -57,10 +58,10 @@ CREATE TABLE Transacao (
 -- ==================================================
 CREATE TABLE Investimento (
     id_investimento NUMBER PRIMARY KEY,
-    id_usuario NUMBER NOT NULL,
+    id_usuario RAW(16) NOT NULL,
     tipo VARCHAR2(100) NOT NULL,
     valor_investido NUMBER(15,2) NOT NULL,
-    data_aplicacao VARCHAR2(50) NOT NULL,
+    data_aplicacao DATE DEFAULT SYSDATE,
     CONSTRAINT fk_investimento_usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
@@ -69,7 +70,7 @@ CREATE TABLE Investimento (
 -- ==================================================
 CREATE TABLE Recompensa (
     id_bonus NUMBER PRIMARY KEY,
-    id_usuario NUMBER NOT NULL,
+    id_usuario RAW(16) NOT NULL,
     descricao VARCHAR2(200) NOT NULL,
     valor NUMBER(15,2) NOT NULL,
     status VARCHAR2(50) NOT NULL,
@@ -79,14 +80,14 @@ CREATE TABLE Recompensa (
 -- ==================================================
 -- Inserir alguns usuários de teste
 -- ==================================================
-INSERT INTO Usuario (id_usuario, nome_completo, telefone, senha, data_criacao) 
-VALUES (1, 'João Silva', '11987654321', 'senha123', SYSDATE);
+INSERT INTO Usuario (nome_completo, nome_usuario, telefone, senha, data_criacao)
+VALUES ('João Silva', 'joao.silva', '11987654321', 'senha123', SYSDATE);
 
-INSERT INTO Usuario (id_usuario, nome_completo, telefone, senha, data_criacao) 
-VALUES (2, 'Maria Santos', '11976543210', 'senha456', SYSDATE);
+INSERT INTO Usuario (nome_usuario, nome_completo, telefone, senha, data_criacao)
+VALUES ('Maria Santos', 'maria.santos', '11976543210', 'senha456', SYSDATE);
 
-INSERT INTO Usuario (id_usuario, nome_completo, telefone, senha, data_criacao) 
-VALUES (3, 'Pedro Oliveira', '11965432109', 'senha789', SYSDATE);
+INSERT INTO Usuario (nome_usuario, nome_completo, telefone, senha, data_criacao)
+VALUES ('Pedro Oliveira', 'pedro.oliveira', '11965432109', 'senha789', SYSDATE);
 
 COMMIT;
 
@@ -98,3 +99,4 @@ FROM user_tables
 WHERE table_name IN ('USUARIO', 'CONTA', 'CARTAO', 'TRANSACAO', 'INVESTIMENTO', 'RECOMPENSA')
 ORDER BY table_name;
 
+SELECT nome_usuario from Usuario

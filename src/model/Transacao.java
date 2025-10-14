@@ -29,10 +29,7 @@ public class Transacao {
 
     public void exibirTransacao() {
         System.out.println("=== Transação ===");
-        System.out.println("ID: " + idTransacao);
-        System.out.println("Conta Origem: " + idContaOrigem);
-        System.out.println("Conta Destino: " + idContaDestino);
-        System.out.println("Valor: " + valor);
+        System.out.println("Valor: R$ " + valor);
         System.out.println("Data: " + data);
         System.out.println("=================");
     }

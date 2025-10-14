@@ -2,7 +2,7 @@ package model;
 
 public class Conta {
     private int idConta;
-    private int idUsuario;
+    private String idUsuario;
     private double saldo;
     private String tipoConta;
     private double valor;
@@ -12,7 +12,7 @@ public class Conta {
     }
 
     // Construtor completo
-    public Conta(int idConta, int idUsuario, double saldo, String tipoConta, double valor, String data) {
+    public Conta(int idConta, String idUsuario, double saldo, String tipoConta, double valor, String data) {
         this.idConta = idConta;
         this.idUsuario = idUsuario;
         this.saldo = saldo;
@@ -22,7 +22,7 @@ public class Conta {
     }
 
     // Construtor sem ID (para insert)
-    public Conta(int idUsuario, double saldo, String tipoConta, double valor, String data) {
+    public Conta(String idUsuario, double saldo, String tipoConta, double valor, String data) {
         this.idUsuario = idUsuario;
         this.saldo = saldo;
         this.tipoConta = tipoConta;
@@ -39,11 +39,11 @@ public class Conta {
         this.idConta = idConta;
     }
 
-    public int getIdUsuario() {
+    public String getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(int idUsuario) {
+    public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
 

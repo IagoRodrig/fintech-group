@@ -21,11 +21,11 @@ public class TesteRecompensaDAO {
         System.out.println(">>> TESTE 1: Inserindo 5 recompensas no banco de dados");
         System.out.println("------------------------------------------");
         
-        Recompensa rec1 = new Recompensa(1, 1, "Cashback compras", 50.00, "Ativo");
-        Recompensa rec2 = new Recompensa(2, 1, "Bônus abertura conta", 100.00, "Resgatado");
-        Recompensa rec3 = new Recompensa(3, 2, "Indicação amigo", 75.00, "Ativo");
-        Recompensa rec4 = new Recompensa(4, 2, "Programa fidelidade", 150.00, "Pendente");
-        Recompensa rec5 = new Recompensa(5, 3, "Cashback investimentos", 200.00, "Ativo");
+        Recompensa rec1 = new Recompensa(1, "iago.rocha", "Cashback compras", 50.00, "Ativo");
+        Recompensa rec2 = new Recompensa(2, "maria.santos", "Bônus abertura conta", 100.00, "Resgatado");
+        Recompensa rec3 = new Recompensa(3, "pedro.oliveira", "Indicação amigo", 75.00, "Ativo");
+        Recompensa rec4 = new Recompensa(4, "maria.santos", "Programa fidelidade", 150.00, "Pendente");
+        Recompensa rec5 = new Recompensa(5, "pedro.oliveira", "Cashback investimentos", 200.00, "Ativo");
         
         recompensaDAO.insert(rec1);
         recompensaDAO.insert(rec2);

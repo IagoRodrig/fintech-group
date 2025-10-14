@@ -17,7 +17,7 @@ public class TransacaoDAO {
      */
     public List<Transacao> getAll() {
         List<Transacao> transacoes = new ArrayList<>();
-        String sql = "SELECT id_transacao, id_conta_origem, id_conta_destino, valor, data FROM Transacao";
+        String sql = "SELECT id_transacao, id_conta_origem, id_conta_destino, valor, data_transacao FROM Transacao";
 
         try (Connection conn = ConnectionFactory.getConnection();
              Statement stmt = conn.createStatement();
@@ -25,19 +25,19 @@ public class TransacaoDAO {
 
             while (rs.next()) {
                 Transacao transacao = new Transacao(
-                    rs.getInt("id_transacao"),
+                    rs.getString("id_transacao").hashCode(), // Converter RAW(16) para int
                     rs.getInt("id_conta_origem"),
                     rs.getInt("id_conta_destino"),
                     rs.getDouble("valor"),
-                    rs.getString("data")
+                    rs.getTimestamp("data_transacao").toString()
                 );
                 transacoes.add(transacao);
             }
 
-            System.out.println("Consulta realizada com sucesso! Total de transações: " + transacoes.size());
+            System.out.println("✅ Consulta realizada com sucesso! Total de transações: " + transacoes.size());
 
         } catch (SQLException e) {
-            System.err.println("Erro ao consultar transações no banco de dados:");
+            System.err.println("❌ Erro ao consultar transações no banco de dados:");
             System.err.println("Mensagem: " + e.getMessage());
             System.err.println("Código do erro: " + e.getErrorCode());
             e.printStackTrace();
@@ -52,27 +52,24 @@ public class TransacaoDAO {
      * @return true se inserido com sucesso, false caso contrário
      */
     public boolean insert(Transacao transacao) {
-        String sql = "INSERT INTO Transacao (id_transacao, id_conta_origem, id_conta_destino, valor, data) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Transacao (id_conta_origem, id_conta_destino, valor) VALUES (?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, transacao.getIdTransacao());
-            pstmt.setInt(2, transacao.getIdContaOrigem());
-            pstmt.setInt(3, transacao.getIdContaDestino());
-            pstmt.setDouble(4, transacao.getValor());
-            pstmt.setString(5, transacao.getData());
+            pstmt.setInt(1, transacao.getIdContaOrigem());
+            pstmt.setInt(2, transacao.getIdContaDestino());
+            pstmt.setDouble(3, transacao.getValor());
 
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Transação inserida com sucesso! ID: " + transacao.getIdTransacao());
+                System.out.println("✅ Transação inserida com sucesso!");
                 return true;
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao inserir transação no banco de dados:");
+            System.err.println("❌ Erro ao inserir transação no banco de dados:");
             System.err.println("Mensagem: " + e.getMessage());
             System.err.println("Código do erro: " + e.getErrorCode());
             
@@ -97,7 +94,7 @@ public class TransacaoDAO {
      * @return Objeto Transacao ou null se não encontrado
      */
     public Transacao findById(int idTransacao) {
-        String sql = "SELECT id_transacao, id_conta_origem, id_conta_destino, valor, data " +
+        String sql = "SELECT id_transacao, id_conta_origem, id_conta_destino, valor, data_transacao " +
                      "FROM Transacao WHERE id_transacao = ?";
         Transacao transacao = null;
 
@@ -109,16 +106,16 @@ public class TransacaoDAO {
 
             if (rs.next()) {
                 transacao = new Transacao(
-                    rs.getInt("id_transacao"),
+                    rs.getString("id_transacao").hashCode(), // Converter RAW(16) para int
                     rs.getInt("id_conta_origem"),
                     rs.getInt("id_conta_destino"),
                     rs.getDouble("valor"),
-                    rs.getString("data")
+                    rs.getTimestamp("data_transacao").toString()
                 );
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao buscar transação por ID:");
+            System.err.println("❌ Erro ao buscar transação por ID:");
             System.err.println("Mensagem: " + e.getMessage());
             e.printStackTrace();
         }

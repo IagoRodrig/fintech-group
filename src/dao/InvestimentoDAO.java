@@ -26,7 +26,7 @@ public class InvestimentoDAO {
             while (rs.next()) {
                 Investimento investimento = new Investimento(
                     rs.getInt("id_investimento"),
-                    rs.getInt("id_usuario"),
+                    rs.getString("id_usuario"),
                     rs.getString("tipo"),
                     rs.getDouble("valor_investido"),
                     rs.getString("data_aplicacao")
@@ -52,27 +52,35 @@ public class InvestimentoDAO {
      * @return true se inserido com sucesso, false caso contrário
      */
     public boolean insert(Investimento investimento) {
-        String sql = "INSERT INTO Investimento (id_investimento, id_usuario, tipo, valor_investido, data_aplicacao) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+        // Primeiro, buscar o ID do usuário pelo nome de usuário
+        String idUsuario = buscarIdUsuarioPorNome(investimento.getIdUsuario());
+        if (idUsuario == null) {
+            System.err.println("❌ Usuário não encontrado: " + investimento.getIdUsuario());
+            return false;
+        }
+
+        // Gerar próximo ID do investimento
+        int proximoId = gerarProximoIdInvestimento();
+        
+        String sql = "INSERT INTO Investimento (id_investimento, id_usuario, tipo, valor_investido) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, investimento.getIdInvestimento());
-            pstmt.setInt(2, investimento.getIdUsuario());
+            pstmt.setInt(1, proximoId);
+            pstmt.setString(2, idUsuario);
             pstmt.setString(3, investimento.getTipo());
             pstmt.setDouble(4, investimento.getValorInvestido());
-            pstmt.setString(5, investimento.getDataAplicacao());
 
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                System.out.println("Investimento inserido com sucesso! ID: " + investimento.getIdInvestimento());
+                System.out.println("✅ Investimento inserido com sucesso! ID: " + proximoId);
                 return true;
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao inserir investimento no banco de dados:");
+            System.err.println("❌ Erro ao inserir investimento no banco de dados:");
             System.err.println("Mensagem: " + e.getMessage());
             System.err.println("Código do erro: " + e.getErrorCode());
             
@@ -110,7 +118,7 @@ public class InvestimentoDAO {
             if (rs.next()) {
                 investimento = new Investimento(
                     rs.getInt("id_investimento"),
-                    rs.getInt("id_usuario"),
+                    rs.getString("id_usuario"),
                     rs.getString("tipo"),
                     rs.getDouble("valor_investido"),
                     rs.getString("data_aplicacao")
@@ -124,6 +132,54 @@ public class InvestimentoDAO {
         }
 
         return investimento;
+    }
+
+    /**
+     * Busca o ID do usuário pelo nome de usuário
+     */
+    private String buscarIdUsuarioPorNome(String nomeUsuario) {
+        String sql = "SELECT id_usuario FROM Usuario WHERE nome_usuario = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("id_usuario");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao buscar ID do usuário:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Gera o próximo ID do investimento
+     */
+    private int gerarProximoIdInvestimento() {
+        String sql = "SELECT NVL(MAX(id_investimento), 0) + 1 AS proximo_id FROM Investimento";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("proximo_id");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao gerar próximo ID do investimento:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return 1; // Fallback
     }
 }
 

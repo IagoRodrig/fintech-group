@@ -21,11 +21,11 @@ public class TesteContaDAO {
         System.out.println(">>> TESTE 1: Inserindo 5 contas no banco de dados");
         System.out.println("------------------------------------------");
         
-        Conta conta1 = new Conta(1, 1, 5000.00, "Corrente", 5000.00, "2024-01-15");
-        Conta conta2 = new Conta(2, 1, 10000.00, "Poupança", 10000.00, "2024-01-20");
-        Conta conta3 = new Conta(3, 2, 3500.50, "Corrente", 3500.50, "2024-02-10");
-        Conta conta4 = new Conta(4, 2, 7500.00, "Investimento", 7500.00, "2024-02-15");
-        Conta conta5 = new Conta(5, 3, 2000.00, "Corrente", 2000.00, "2024-03-01");
+        Conta conta1 = new Conta(1, "joao.silva", 5000.00, "Corrente", 5000.00, "2024-01-15");
+        Conta conta2 = new Conta(2, "joao.silva", 10000.00, "Poupança", 10000.00, "2024-01-20");
+        Conta conta3 = new Conta(3, "maria.santos", 3500.50, "Corrente", 3500.50, "2024-02-10");
+        Conta conta4 = new Conta(4, "maria.santos", 7500.00, "Investimento", 7500.00, "2024-02-15");
+        Conta conta5 = new Conta(5, "pedro.oliveira", 2000.00, "Corrente", 2000.00, "2024-03-01");
         
         contaDAO.insert(conta1);
         contaDAO.insert(conta2);

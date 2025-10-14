@@ -21,11 +21,11 @@ public class TesteInvestimentoDAO {
         System.out.println(">>> TESTE 1: Inserindo 5 investimentos no banco de dados");
         System.out.println("------------------------------------------");
         
-        Investimento inv1 = new Investimento(1, 1, "CDB", 10000.00, "2024-01-10");
-        Investimento inv2 = new Investimento(2, 1, "Tesouro Direto", 5000.00, "2024-01-15");
-        Investimento inv3 = new Investimento(3, 2, "LCI", 15000.00, "2024-02-05");
-        Investimento inv4 = new Investimento(4, 2, "Ações", 8000.00, "2024-02-20");
-        Investimento inv5 = new Investimento(5, 3, "Fundos Imobiliários", 12000.00, "2024-03-01");
+        Investimento inv1 = new Investimento(1, "joao.silva", "CDB", 10000.00, "2024-01-10");
+        Investimento inv2 = new Investimento(2, "joao.silva", "Tesouro Direto", 5000.00, "2024-01-15");
+        Investimento inv3 = new Investimento(3, "maria.santos", "LCI", 15000.00, "2024-02-05");
+        Investimento inv4 = new Investimento(4, "maria.santos", "Ações", 8000.00, "2024-02-20");
+        Investimento inv5 = new Investimento(5, "pedro.oliveira", "Fundos Imobiliários", 12000.00, "2024-03-01");
         
         investimentoDAO.insert(inv1);
         investimentoDAO.insert(inv2);
