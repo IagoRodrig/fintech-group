@@ -2,7 +2,7 @@ package model;
 
 public class Recompensa {
     private int idBonus;
-    private int idUsuario;
+    private String idUsuario;
     private String descricao;
     private double valor;
     private String status;
@@ -10,8 +10,17 @@ public class Recompensa {
     public Recompensa() {
     }
 
-    public Recompensa(int idBonus, int idUsuario, String descricao, double valor, String status) {
+    // Construtor completo
+    public Recompensa(int idBonus, String idUsuario, String descricao, double valor, String status) {
         this.idBonus = idBonus;
+        this.idUsuario = idUsuario;
+        this.descricao = descricao;
+        this.valor = valor;
+        this.status = status;
+    }
+
+    // Construtor sem ID (para insert)
+    public Recompensa(String idUsuario, String descricao, double valor, String status) {
         this.idUsuario = idUsuario;
         this.descricao = descricao;
         this.valor = valor;
@@ -26,11 +35,11 @@ public class Recompensa {
         this.idBonus = idBonus;
     }
 
-    public int getIdUsuario() {
+    public String getIdUsuario() {
         return this.idUsuario;
     }
 
-    public void setIdUsuario(int idUsuario) {
+    public void setIdUsuario(String idUsuario) {
         this.idUsuario = idUsuario;
     }
 
@@ -65,5 +74,16 @@ public class Recompensa {
         System.out.println("Valor: " + this.valor);
         System.out.println("Status: " + this.status);
         System.out.println("--------------------------------");
+    }
+
+    @Override
+    public String toString() {
+        return "Recompensa{" +
+                "idBonus=" + idBonus +
+                ", idUsuario=" + idUsuario +
+                ", descricao='" + descricao + '\'' +
+                ", valor=" + valor +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

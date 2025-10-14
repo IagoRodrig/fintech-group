@@ -3,7 +3,7 @@ package model;
 public class Bonus extends Recompensa {
     private String tipoBonus;
 
-    public Bonus(int idBonus, int idUsuario, String descricao, double valor, String status, String tipoBonus) {
+    public Bonus(int idBonus, String idUsuario, String descricao, double valor, String status, String tipoBonus) {
         super(idBonus, idUsuario, descricao, valor, status);
         this.tipoBonus = tipoBonus;
     }
