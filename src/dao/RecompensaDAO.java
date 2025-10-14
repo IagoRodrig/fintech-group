@@ -12,6 +12,45 @@ import java.util.List;
 public class RecompensaDAO {
 
     /**
+     * Busca recompensas por nome de usuário
+     * @param nomeUsuario Nome do usuário
+     * @return Lista de recompensas do usuário
+     */
+    public List<Recompensa> getRecompensasPorUsuario(String nomeUsuario) {
+        List<Recompensa> recompensas = new ArrayList<>();
+        String sql = "SELECT r.id_bonus, r.id_usuario, r.descricao, r.valor, r.status " +
+                     "FROM Recompensa r " +
+                     "INNER JOIN Usuario u ON r.id_usuario = u.id_usuario " +
+                     "WHERE u.nome_usuario = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Recompensa recompensa = new Recompensa(
+                        rs.getInt("id_bonus"),
+                        rs.getString("id_usuario"),
+                        rs.getString("descricao"),
+                        rs.getDouble("valor"),
+                        rs.getString("status")
+                    );
+                    recompensas.add(recompensa);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar recompensas por usuário:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return recompensas;
+    }
+
+    /**
      * Retorna todas as recompensas cadastradas no banco de dados
      * @return Lista de objetos Recompensa
      */

@@ -183,5 +183,64 @@ public class ContaDAO {
 
         return 1; // Fallback
     }
+
+    /**
+     * Busca o ID da conta pelo nome de usuário
+     * @param nomeUsuario Nome do usuário
+     * @return ID da primeira conta encontrada ou -1 se não encontrado
+     */
+    public int buscarIdContaPorUsuario(String nomeUsuario) {
+        String sql = "SELECT c.id_conta FROM Conta c " +
+                     "INNER JOIN Usuario u ON c.id_usuario = u.id_usuario " +
+                     "WHERE u.nome_usuario = ? AND ROWNUM = 1";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id_conta");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao buscar ID da conta por usuário:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return -1; // Usuário não encontrado
+    }
+
+    /**
+     * Busca todas as contas de um usuário
+     * @param nomeUsuario Nome do usuário
+     * @return Lista de IDs das contas do usuário
+     */
+    public List<Integer> buscarIdsContasPorUsuario(String nomeUsuario) {
+        List<Integer> idsContas = new ArrayList<>();
+        String sql = "SELECT c.id_conta FROM Conta c " +
+                     "INNER JOIN Usuario u ON c.id_usuario = u.id_usuario " +
+                     "WHERE u.nome_usuario = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                idsContas.add(rs.getInt("id_conta"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao buscar IDs das contas por usuário:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return idsContas;
+    }
 }
 

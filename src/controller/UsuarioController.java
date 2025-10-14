@@ -8,12 +8,26 @@ import java.util.Scanner;
 
 public class UsuarioController {
     private UsuarioDAO usuarioDAO;
+    private LoginController loginController;
 
     public UsuarioController() {
         this.usuarioDAO = new UsuarioDAO();
     }
+    
+    public void setLoginController(LoginController loginController) {
+        this.loginController = loginController;
+    }
 
     public void criarUsuario(Scanner input) {
+        // Verificar se já há usuário logado
+        if (loginController != null && loginController.isLogado()) {
+            System.out.println("❌ Não é possível criar usuário quando já logado!");
+            System.out.println("👤 Usuário atual: " + loginController.getNomeUsuarioLogado());
+            System.out.println("💡 Faça logout primeiro se deseja criar outro usuário.");
+            return;
+        }
+        
+        System.out.println("👤 === CRIAR NOVO USUÁRIO ===");
         System.out.print("Nome de usuário: ");
         String nomeUsuario = input.nextLine();
         System.out.print("Nome completo: ");
@@ -26,9 +40,12 @@ public class UsuarioController {
         Usuario usuario = new Usuario(nomeUsuario, nomeCompleto, telefone, senha);
         
         if (usuarioDAO.insert(usuario)) {
-            System.out.println("Usuário cadastrado com sucesso: " + usuario.getNomeCompleto());
+            System.out.println("✅ Usuário cadastrado com sucesso!");
+            System.out.println("👤 Nome: " + usuario.getNomeCompleto());
+            System.out.println("📧 Usuário: " + usuario.getNomeUsuario());
+            System.out.println("💡 Agora você pode fazer login (opção 0 do menu principal).");
         } else {
-            System.out.println("Erro ao cadastrar usuário!");
+            System.out.println("❌ Erro ao cadastrar usuário!");
         }
     }
 
@@ -63,10 +80,10 @@ public class UsuarioController {
         int opcao;
         do {
             System.out.println("\n=== OPERAÇÕES DE USUÁRIO ===");
-            System.out.println("1 - Criar Usuário");
-            System.out.println("2 - Listar Usuários");
-            System.out.println("3 - Buscar Usuário");
-            System.out.println("4 - Voltar");
+            System.out.println("1 - 👤 Criar Usuário");
+            System.out.println("2 - 📋 Listar Usuários");
+            System.out.println("3 - 🔍 Buscar Usuário");
+            System.out.println("4 - ⬅️  Voltar");
             System.out.print("Opção: ");
             opcao = input.nextInt();
             input.nextLine();
@@ -75,8 +92,8 @@ public class UsuarioController {
                 case 1 -> criarUsuario(input);
                 case 2 -> listarUsuarios();
                 case 3 -> buscarUsuario(input);
-                case 4 -> System.out.println("Voltando...");
-                default -> System.out.println("Opção inválida!");
+                case 4 -> System.out.println("⬅️  Voltando...");
+                default -> System.out.println("❌ Opção inválida!");
             }
         } while (opcao != 4);
     }

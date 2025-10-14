@@ -90,37 +90,20 @@ public class TransacaoDAO {
 
     /**
      * Busca uma transação por ID
-     * @param idTransacao ID da transação a ser buscada
+     * @param idTransacao ID da transação a ser buscada (hash do RAW)
      * @return Objeto Transacao ou null se não encontrado
      */
     public Transacao findById(int idTransacao) {
-        String sql = "SELECT id_transacao, id_conta_origem, id_conta_destino, valor, data_transacao " +
-                     "FROM Transacao WHERE id_transacao = ?";
-        Transacao transacao = null;
-
-        try (Connection conn = ConnectionFactory.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, idTransacao);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                transacao = new Transacao(
-                    rs.getString("id_transacao").hashCode(), // Converter RAW(16) para int
-                    rs.getInt("id_conta_origem"),
-                    rs.getInt("id_conta_destino"),
-                    rs.getDouble("valor"),
-                    rs.getTimestamp("data_transacao").toString()
-                );
+        // Como o ID é RAW(16) no banco, vamos buscar todas as transações e comparar o hash
+        List<Transacao> transacoes = getAll();
+        
+        for (Transacao transacao : transacoes) {
+            if (transacao.getIdTransacao() == idTransacao) {
+                return transacao;
             }
-
-        } catch (SQLException e) {
-            System.err.println("❌ Erro ao buscar transação por ID:");
-            System.err.println("Mensagem: " + e.getMessage());
-            e.printStackTrace();
         }
-
-        return transacao;
+        
+        return null;
     }
 }
 

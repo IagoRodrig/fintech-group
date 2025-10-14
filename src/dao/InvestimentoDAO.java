@@ -12,6 +12,45 @@ import java.util.List;
 public class InvestimentoDAO {
 
     /**
+     * Busca investimentos por nome de usuário
+     * @param nomeUsuario Nome do usuário
+     * @return Lista de investimentos do usuário
+     */
+    public List<Investimento> getInvestimentosPorUsuario(String nomeUsuario) {
+        List<Investimento> investimentos = new ArrayList<>();
+        String sql = "SELECT i.id_investimento, i.id_usuario, i.tipo, i.valor_investido, i.data_aplicacao " +
+                     "FROM Investimento i " +
+                     "INNER JOIN Usuario u ON i.id_usuario = u.id_usuario " +
+                     "WHERE u.nome_usuario = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Investimento investimento = new Investimento(
+                        rs.getInt("id_investimento"),
+                        rs.getString("id_usuario"),
+                        rs.getString("tipo"),
+                        rs.getDouble("valor_investido"),
+                        rs.getString("data_aplicacao")
+                    );
+                    investimentos.add(investimento);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar investimentos por usuário:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return investimentos;
+    }
+
+    /**
      * Retorna todos os investimentos cadastrados no banco de dados
      * @return Lista de objetos Investimento
      */
