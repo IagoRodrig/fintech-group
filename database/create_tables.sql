@@ -40,6 +40,17 @@ CREATE TABLE Cartao (
     CONSTRAINT fk_cartao_conta FOREIGN KEY (id_conta) REFERENCES Conta(id_conta)
 );
 
+-- Primeiro: Adicionar colunas para identificar transações de cartão
+ALTER TABLE Transacao ADD (
+    id_cartao NUMBER,
+    tipo_transacao VARCHAR2(50) DEFAULT 'TRANSFERENCIA',
+    descricao VARCHAR2(200)
+);
+
+-- Segundo: Adicionar constraint para cartão (após criar a coluna)
+ALTER TABLE Transacao ADD CONSTRAINT fk_transacao_cartao 
+FOREIGN KEY (id_cartao) REFERENCES Cartao(id_cartao);
+
 -- ==================================================
 -- TABELA: Transacao
 -- ==================================================

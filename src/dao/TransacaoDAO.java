@@ -17,19 +17,34 @@ public class TransacaoDAO {
      */
     public List<Transacao> getAll() {
         List<Transacao> transacoes = new ArrayList<>();
-        String sql = "SELECT id_transacao, id_conta_origem, id_conta_destino, valor, data_transacao FROM Transacao";
+        String sql = "SELECT id_transacao, id_conta_origem, id_conta_destino, valor, data_transacao, id_cartao, tipo_transacao, descricao FROM Transacao";
 
         try (Connection conn = ConnectionFactory.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
+                // Verificar se id_conta_destino é null
+                int idContaDestino = 0;
+                if (rs.getObject("id_conta_destino") != null) {
+                    idContaDestino = rs.getInt("id_conta_destino");
+                }
+                
+                // Verificar se id_cartao é null
+                Integer idCartao = null;
+                if (rs.getObject("id_cartao") != null) {
+                    idCartao = rs.getInt("id_cartao");
+                }
+                
                 Transacao transacao = new Transacao(
                     rs.getString("id_transacao").hashCode(), // Converter RAW(16) para int
                     rs.getInt("id_conta_origem"),
-                    rs.getInt("id_conta_destino"),
+                    idContaDestino,
                     rs.getDouble("valor"),
-                    rs.getTimestamp("data_transacao").toString()
+                    rs.getTimestamp("data_transacao").toString(),
+                    idCartao,
+                    rs.getString("tipo_transacao"),
+                    rs.getString("descricao")
                 );
                 transacoes.add(transacao);
             }
@@ -52,14 +67,32 @@ public class TransacaoDAO {
      * @return true se inserido com sucesso, false caso contrário
      */
     public boolean insert(Transacao transacao) {
-        String sql = "INSERT INTO Transacao (id_conta_origem, id_conta_destino, valor) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Transacao (id_conta_origem, id_conta_destino, valor, id_cartao, tipo_transacao, descricao) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, transacao.getIdContaOrigem());
-            pstmt.setInt(2, transacao.getIdContaDestino());
+            
+            // id_conta_destino pode ser null para transações de cartão
+            if (transacao.getIdContaDestino() != 0) {
+                pstmt.setInt(2, transacao.getIdContaDestino());
+            } else {
+                pstmt.setNull(2, java.sql.Types.INTEGER);
+            }
+            
             pstmt.setDouble(3, transacao.getValor());
+            
+            // id_cartao pode ser null para transferências normais
+            if (transacao.getIdCartao() != null) {
+                pstmt.setInt(4, transacao.getIdCartao());
+            } else {
+                pstmt.setNull(4, java.sql.Types.INTEGER);
+            }
+            
+            // tipo_transacao e descricao
+            pstmt.setString(5, transacao.getTipoTransacao() != null ? transacao.getTipoTransacao() : "TRANSFERENCIA");
+            pstmt.setString(6, transacao.getDescricao());
 
             int rowsAffected = pstmt.executeUpdate();
 

@@ -1,8 +1,10 @@
 package controller;
 
 import model.Cartao;
+import model.Transacao;
 import dao.CartaoDAO;
 import dao.ContaDAO;
+import dao.TransacaoDAO;
 
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +12,7 @@ import java.util.Scanner;
 public class CartaoController {
     private CartaoDAO cartaoDAO;
     private ContaDAO contaDAO;
+    private TransacaoDAO transacaoDAO;
     private LoginController loginController;
     private Scanner input;
 
@@ -17,6 +20,7 @@ public class CartaoController {
         this.input = input;
         this.cartaoDAO = new CartaoDAO();
         this.contaDAO = new ContaDAO();
+        this.transacaoDAO = new TransacaoDAO();
     }
     
     public void setLoginController(LoginController loginController) {
@@ -154,6 +158,7 @@ public class CartaoController {
         System.out.println("💰 Limite: R$ " + cartao.getLimiteCredito());
         System.out.println("\n1 - 💸 Realizar Compra");
         System.out.println("2 - 🔄 Alterar Limite");
+        System.out.println("3 - 🧪 Testar Limite (Debug)");
         System.out.println("0 - ⬅️  Voltar");
         System.out.print("Opção: ");
         
@@ -178,11 +183,38 @@ public class CartaoController {
                 }
                 
                 double novoLimite = cartao.getLimiteCredito() - valor;
-                cartao.setLimiteCredito(novoLimite);
-                System.out.println("✅ Compra de R$ " + valor + " realizada com sucesso!");
-                System.out.println("💰 Limite restante: R$ " + novoLimite);
                 
-                // TODO: Implementar update no banco de dados
+                // Atualizar limite no banco de dados
+                boolean limiteAtualizado = cartaoDAO.updateLimiteCredito(cartao.getIdCartao(), novoLimite);
+                
+                if (limiteAtualizado) {
+                    // Atualizar limite no objeto em memória
+                    cartao.setLimiteCredito(novoLimite);
+                    
+                    // Criar transação da compra
+                    Transacao transacaoCompra = new Transacao(
+                        cartao.getIdConta(), // Conta vinculada ao cartão
+                        cartao.getIdCartao(), // ID do cartão usado
+                        valor, // Valor da compra
+                        "COMPRA_CARTAO", // Tipo da transação
+                        "Compra realizada com cartão " + cartao.getNumeroMascarado() + " (" + cartao.getTipoCartao() + ")"
+                    );
+                    
+                    // Salvar transação no banco
+                    boolean transacaoSalva = transacaoDAO.insert(transacaoCompra);
+                    
+                    if (transacaoSalva) {
+                        System.out.println("✅ Compra de R$ " + valor + " realizada com sucesso!");
+                        System.out.println("💰 Limite restante: R$ " + novoLimite);
+                        System.out.println("📋 Transação registrada no histórico!");
+                    } else {
+                        System.out.println("✅ Compra de R$ " + valor + " realizada com sucesso!");
+                        System.out.println("💰 Limite restante: R$ " + novoLimite);
+                        System.err.println("⚠️ Compra realizada, mas transação não foi registrada no histórico.");
+                    }
+                } else {
+                    System.err.println("❌ Erro ao atualizar limite no banco de dados. Compra cancelada.");
+                }
             }
             case 2 -> {
                 System.out.print("💰 Novo limite: R$ ");
@@ -194,11 +226,18 @@ public class CartaoController {
                     return;
                 }
                 
-                cartao.setLimiteCredito(novoLimite);
-                System.out.println("✅ Limite do cartão " + cartao.getIdCartao() + " alterado para: R$ " + novoLimite);
+                // Atualizar limite no banco de dados
+                boolean limiteAtualizado = cartaoDAO.updateLimiteCredito(cartao.getIdCartao(), novoLimite);
                 
-                // TODO: Implementar update no banco de dados
+                if (limiteAtualizado) {
+                    // Atualizar limite no objeto em memória
+                    cartao.setLimiteCredito(novoLimite);
+                    System.out.println("✅ Limite do cartão " + cartao.getIdCartao() + " alterado para: R$ " + novoLimite);
+                } else {
+                    System.err.println("❌ Erro ao atualizar limite no banco de dados.");
+                }
             }
+            case 3 -> cartaoDAO.testarLimite(cartao.getIdCartao());
             case 0 -> System.out.println("⬅️  Voltando...");
             default -> System.out.println("❌ Opção inválida!");
         }
@@ -225,5 +264,19 @@ public class CartaoController {
             return "**** **** **** " + numero.substring(numero.length() - 4);
         }
         return "**** **** **** " + numero;
+    }
+
+    /**
+     * Método público para testar conexão e inserção de cartões
+     */
+    public void testarConexaoEInsercao() {
+        cartaoDAO.testarConexaoEInsercao();
+    }
+
+    /**
+     * Método público para testar especificamente o limite
+     */
+    public void testarLimiteEspecifico() {
+        cartaoDAO.testarLimiteEspecifico();
     }
 }

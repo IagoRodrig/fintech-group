@@ -49,6 +49,7 @@ public class Main {
                 System.out.println("7 - 💸 Transação Bancária");
                 System.out.println("8 - 📈 Operações Investimento");
                 System.out.println("9 - 🎁 Gerenciar Recompensas");
+                System.out.println("11 - 🧪 Teste de Limite do Cartão");
             }
             
             System.out.println("10 - 🚪 Sair");
@@ -131,6 +132,14 @@ public class Main {
                             case 3 -> recompensaController.exibir();
                             default -> System.out.println("Opção inválida!");
                         }
+                    } else {
+                        System.out.println("❌ É necessário fazer login primeiro!");
+                    }
+                }
+                case 11 -> {
+                    if (loginController.isLogado()) {
+                        System.out.println("\n🧪 === TESTE DE LIMITE DO CARTÃO ===");
+                        cartaoController.testarLimiteEspecifico();
                     } else {
                         System.out.println("❌ É necessário fazer login primeiro!");
                     }

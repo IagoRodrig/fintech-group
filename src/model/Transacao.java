@@ -6,6 +6,9 @@ public class Transacao {
     private int idContaDestino;
     private double valor;
     private String data;
+    private Integer idCartao; // Nullable - só preenchido para transações de cartão
+    private String tipoTransacao; // TRANSFERENCIA, COMPRA_CARTAO, SAQUE, DEPOSITO
+    private String descricao; // Descrição detalhada da transação
 
     public Transacao() {
     }
@@ -25,6 +28,42 @@ public class Transacao {
         this.idContaDestino = idContaDestino;
         this.valor = valor;
         this.data = data;
+    }
+
+    // Construtor completo com novos campos
+    public Transacao(int idTransacao, int idContaOrigem, int idContaDestino, double valor, String data, 
+                     Integer idCartao, String tipoTransacao, String descricao) {
+        this.idTransacao = idTransacao;
+        this.idContaOrigem = idContaOrigem;
+        this.idContaDestino = idContaDestino;
+        this.valor = valor;
+        this.data = data;
+        this.idCartao = idCartao;
+        this.tipoTransacao = tipoTransacao;
+        this.descricao = descricao;
+    }
+
+    // Construtor sem ID (para insert) com novos campos
+    public Transacao(int idContaOrigem, int idContaDestino, double valor, String data, 
+                     Integer idCartao, String tipoTransacao, String descricao) {
+        this.idContaOrigem = idContaOrigem;
+        this.idContaDestino = idContaDestino;
+        this.valor = valor;
+        this.data = data;
+        this.idCartao = idCartao;
+        this.tipoTransacao = tipoTransacao;
+        this.descricao = descricao;
+    }
+
+    // Construtor para transações de cartão
+    public Transacao(int idContaOrigem, int idCartao, double valor, String tipoTransacao, String descricao) {
+        this.idContaOrigem = idContaOrigem;
+        this.idContaDestino = 0; // Transações de cartão não têm conta destino (usar 0 como padrão)
+        this.valor = valor;
+        this.data = null; // Será preenchida automaticamente pelo banco
+        this.idCartao = idCartao;
+        this.tipoTransacao = tipoTransacao;
+        this.descricao = descricao;
     }
 
     public void exibirTransacao() {
@@ -75,6 +114,30 @@ public class Transacao {
         this.data = data;
     }
 
+    public Integer getIdCartao() {
+        return idCartao;
+    }
+
+    public void setIdCartao(Integer idCartao) {
+        this.idCartao = idCartao;
+    }
+
+    public String getTipoTransacao() {
+        return tipoTransacao;
+    }
+
+    public void setTipoTransacao(String tipoTransacao) {
+        this.tipoTransacao = tipoTransacao;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
     @Override
     public String toString() {
         return "Transacao{" +
@@ -83,6 +146,9 @@ public class Transacao {
                 ", idContaDestino=" + idContaDestino +
                 ", valor=" + valor +
                 ", data='" + data + '\'' +
+                ", idCartao=" + idCartao +
+                ", tipoTransacao='" + tipoTransacao + '\'' +
+                ", descricao='" + descricao + '\'' +
                 '}';
     }
 }

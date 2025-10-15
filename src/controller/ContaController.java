@@ -233,12 +233,19 @@ public class ContaController {
             input.nextLine();
 
             if (newValue >= 0) {
-                contaAtual.setSaldo(newValue);
-                System.out.println("✅ Valor alterado com sucesso!");
-                System.out.println("💵 Novo saldo: R$ " + contaAtual.getSaldo());
-                valida = true;
+                // Atualizar saldo no banco de dados
+                boolean saldoAtualizado = contaDAO.updateSaldo(contaAtual.getIdConta(), newValue);
                 
-                // TODO: Implementar update no banco de dados
+                if (saldoAtualizado) {
+                    // Atualizar saldo no objeto em memória
+                    contaAtual.setSaldo(newValue);
+                    System.out.println("✅ Valor alterado com sucesso!");
+                    System.out.println("💵 Novo saldo: R$ " + contaAtual.getSaldo());
+                    valida = true;
+                } else {
+                    System.err.println("❌ Erro ao atualizar saldo no banco de dados.");
+                    valida = false;
+                }
             } else {
                 System.out.println("❌ Valor inválido! Deve ser maior ou igual a zero.");
                 valida = false;
