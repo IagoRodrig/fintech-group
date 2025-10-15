@@ -89,6 +89,52 @@ public class TransacaoDAO {
     }
 
     /**
+     * Busca transações relacionadas a um usuário específico
+     * @param nomeUsuario Nome do usuário
+     * @return Lista de transações onde o usuário é origem ou destino
+     */
+    public List<Transacao> getByUsuario(String nomeUsuario) {
+        List<Transacao> transacoes = new ArrayList<>();
+        String sql = "SELECT t.id_transacao, t.id_conta_origem, t.id_conta_destino, t.valor, t.data_transacao " +
+                     "FROM Transacao t " +
+                     "INNER JOIN Conta co ON t.id_conta_origem = co.id_conta " +
+                     "INNER JOIN Usuario uo ON co.id_usuario = uo.id_usuario " +
+                     "LEFT JOIN Conta cd ON t.id_conta_destino = cd.id_conta " +
+                     "LEFT JOIN Usuario ud ON cd.id_usuario = ud.id_usuario " +
+                     "WHERE uo.nome_usuario = ? OR ud.nome_usuario = ? " +
+                     "ORDER BY t.data_transacao DESC";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+            pstmt.setString(2, nomeUsuario);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Transacao transacao = new Transacao(
+                    rs.getString("id_transacao").hashCode(), // Converter RAW(16) para int
+                    rs.getInt("id_conta_origem"),
+                    rs.getInt("id_conta_destino"),
+                    rs.getDouble("valor"),
+                    rs.getTimestamp("data_transacao").toString()
+                );
+                transacoes.add(transacao);
+            }
+
+            System.out.println("✅ Consulta de transações do usuário realizada com sucesso! Total: " + transacoes.size());
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao consultar transações do usuário no banco de dados:");
+            System.err.println("Mensagem: " + e.getMessage());
+            System.err.println("Código do erro: " + e.getErrorCode());
+            e.printStackTrace();
+        }
+
+        return transacoes;
+    }
+
+    /**
      * Busca uma transação por ID
      * @param idTransacao ID da transação a ser buscada (hash do RAW)
      * @return Objeto Transacao ou null se não encontrado

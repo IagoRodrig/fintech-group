@@ -242,5 +242,150 @@ public class ContaDAO {
 
         return idsContas;
     }
+
+    /**
+     * Atualiza o saldo de uma conta no banco de dados
+     * @param idConta ID da conta a ser atualizada
+     * @param novoSaldo Novo valor do saldo
+     * @return true se atualizado com sucesso, false caso contrário
+     */
+    public boolean updateSaldo(int idConta, double novoSaldo) {
+        String sql = "UPDATE Conta SET saldo = ? WHERE id_conta = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, novoSaldo);
+            pstmt.setInt(2, idConta);
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("✅ Saldo da conta " + idConta + " atualizado para R$ " + novoSaldo);
+                return true;
+            } else {
+                System.err.println("❌ Nenhuma conta foi atualizada. Verifique se o ID da conta existe.");
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao atualizar saldo da conta no banco de dados:");
+            System.err.println("Mensagem: " + e.getMessage());
+            System.err.println("Código do erro: " + e.getErrorCode());
+            
+            // Tratamento específico para erros comuns
+            if (e.getErrorCode() == 942) {
+                System.err.println("ATENÇÃO: Tabela não encontrada. Verifique se a tabela Conta existe no banco.");
+            }
+            
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Atualiza uma conta completa no banco de dados
+     * @param conta Objeto Conta com os dados atualizados
+     * @return true se atualizado com sucesso, false caso contrário
+     */
+    public boolean update(Conta conta) {
+        String sql = "UPDATE Conta SET saldo = ?, tipo_conta = ?, valor = ? WHERE id_conta = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, conta.getSaldo());
+            pstmt.setString(2, conta.getTipoConta());
+            pstmt.setDouble(3, conta.getValor());
+            pstmt.setInt(4, conta.getIdConta());
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("✅ Conta " + conta.getIdConta() + " atualizada com sucesso!");
+                return true;
+            } else {
+                System.err.println("❌ Nenhuma conta foi atualizada. Verifique se o ID da conta existe.");
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao atualizar conta no banco de dados:");
+            System.err.println("Mensagem: " + e.getMessage());
+            System.err.println("Código do erro: " + e.getErrorCode());
+            
+            // Tratamento específico para erros comuns
+            if (e.getErrorCode() == 942) {
+                System.err.println("ATENÇÃO: Tabela não encontrada. Verifique se a tabela Conta existe no banco.");
+            }
+            
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Verifica se um usuário já possui uma conta do tipo especificado
+     * @param nomeUsuario Nome do usuário
+     * @param tipoConta Tipo da conta (Corrente, Poupança, Investimento)
+     * @return true se já existe conta deste tipo, false caso contrário
+     */
+    public boolean existeContaPorTipo(String nomeUsuario, String tipoConta) {
+        String sql = "SELECT COUNT(*) as total FROM Conta c " +
+                     "INNER JOIN Usuario u ON c.id_usuario = u.id_usuario " +
+                     "WHERE u.nome_usuario = ? AND UPPER(c.tipo_conta) = UPPER(?)";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+            pstmt.setString(2, tipoConta);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int total = rs.getInt("total");
+                return total > 0;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao verificar conta por tipo:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * Retorna os tipos de conta que um usuário já possui
+     * @param nomeUsuario Nome do usuário
+     * @return Lista de tipos de conta já existentes
+     */
+    public List<String> getTiposContaExistentes(String nomeUsuario) {
+        List<String> tiposExistentes = new ArrayList<>();
+        String sql = "SELECT DISTINCT c.tipo_conta FROM Conta c " +
+                     "INNER JOIN Usuario u ON c.id_usuario = u.id_usuario " +
+                     "WHERE u.nome_usuario = ?";
+        
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, nomeUsuario);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                tiposExistentes.add(rs.getString("tipo_conta"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Erro ao buscar tipos de conta existentes:");
+            System.err.println("Mensagem: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return tiposExistentes;
+    }
 }
 

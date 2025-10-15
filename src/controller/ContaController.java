@@ -32,8 +32,27 @@ public class ContaController {
         String usuarioLogado = loginController.getNomeUsuarioLogado();
         System.out.println("👤 Criando conta para: " + usuarioLogado);
         
-        System.out.print("Tipo da conta (Corrente/Poupança/Investimento): ");
+        // Verificar tipos de conta já existentes
+        List<String> tiposExistentes = contaDAO.getTiposContaExistentes(usuarioLogado);
+        
+        if (!tiposExistentes.isEmpty()) {
+            System.out.println("\n📋 Você já possui os seguintes tipos de conta:");
+            for (String tipo : tiposExistentes) {
+                System.out.println("  ✅ " + tipo);
+            }
+            System.out.println("\n💡 Você só pode ter UMA conta de cada tipo!");
+        }
+        
+        System.out.print("\nTipo da conta (Corrente/Poupança/Investimento): ");
         String tipoConta = input.nextLine();
+        
+        // Validar se já existe conta deste tipo
+        if (contaDAO.existeContaPorTipo(usuarioLogado, tipoConta)) {
+            System.out.println("❌ Você já possui uma conta do tipo '" + tipoConta + "'!");
+            System.out.println("💡 Escolha um tipo diferente ou use sua conta existente.");
+            return;
+        }
+        
         System.out.print("Saldo inicial: ");
         double saldo = input.nextDouble();
         input.nextLine();

@@ -61,12 +61,50 @@ public class TransacaoController {
             return;
         } else {
             double novoSaldo = conta.getSaldo() - t.getValor();
-            conta.setSaldo(novoSaldo);
-            System.out.println("Transação realizada com sucesso!");
-            t.exibirTransacao();
             
-            // Salvar transação no banco de dados
-            transacaoDAO.insert(t);
+            // Buscar conta destino para atualizar seu saldo também
+            Conta contaDestino = contaDAO.findById(t.getIdContaDestino());
+            if (contaDestino == null) {
+                System.err.println("❌ Conta destino não encontrada. Transação cancelada.");
+                return;
+            }
+            
+            double novoSaldoDestino = contaDestino.getSaldo() + t.getValor();
+            
+            // Atualizar saldo da conta origem no banco de dados
+            boolean saldoOrigemAtualizado = contaDAO.updateSaldo(conta.getIdConta(), novoSaldo);
+            
+            if (saldoOrigemAtualizado) {
+                // Atualizar saldo da conta destino no banco de dados
+                boolean saldoDestinoAtualizado = contaDAO.updateSaldo(contaDestino.getIdConta(), novoSaldoDestino);
+                
+                if (saldoDestinoAtualizado) {
+                    // Atualizar saldos nos objetos em memória
+                    conta.setSaldo(novoSaldo);
+                    contaDestino.setSaldo(novoSaldoDestino);
+                    
+                    // Salvar transação no banco de dados
+                    boolean transacaoSalva = transacaoDAO.insert(t);
+                    
+                    if (transacaoSalva) {
+                        System.out.println("✅ Transação realizada com sucesso!");
+                        System.out.println("💰 Seu novo saldo: R$ " + novoSaldo);
+                        System.out.println("🏦 Conta destino atualizada: R$ " + novoSaldoDestino);
+                        t.exibirTransacao();
+                    } else {
+                        System.err.println("❌ Erro ao salvar transação. Revertendo operação...");
+                        // Reverter saldos no banco se a transação não foi salva
+                        contaDAO.updateSaldo(conta.getIdConta(), conta.getSaldo() + t.getValor());
+                        contaDAO.updateSaldo(contaDestino.getIdConta(), contaDestino.getSaldo() - t.getValor());
+                    }
+                } else {
+                    System.err.println("❌ Erro ao atualizar saldo da conta destino. Revertendo operação...");
+                    // Reverter saldo da conta origem
+                    contaDAO.updateSaldo(conta.getIdConta(), conta.getSaldo() + t.getValor());
+                }
+            } else {
+                System.err.println("❌ Erro ao atualizar saldo da conta origem. Transação cancelada.");
+            }
         }
     }
 
@@ -191,12 +229,24 @@ public class TransacaoController {
     }
 
     public void listarTransacoes() {
-        List<Transacao> transacoes = transacaoDAO.getAll();
+        // Verificar se há usuário logado
+        if (loginController == null || !loginController.isLogado()) {
+            System.out.println("❌ É necessário fazer login para visualizar transações!");
+            System.out.println("💡 Use o menu de login primeiro.");
+            return;
+        }
+        
+        String usuarioLogado = loginController.getNomeUsuarioLogado();
+        System.out.println("👤 Usuário logado: " + usuarioLogado);
+        
+        // Buscar apenas transações do usuário logado
+        List<Transacao> transacoes = transacaoDAO.getByUsuario(usuarioLogado);
         
         if (transacoes.isEmpty()) {
-            System.out.println("Nenhuma transação encontrada!");
+            System.out.println("📋 Nenhuma transação encontrada para este usuário!");
         } else {
-            System.out.println("\n=== LISTA DE TRANSAÇÕES ===");
+            System.out.println("\n=== SUAS TRANSAÇÕES ===");
+            System.out.println("🔒 Mostrando apenas suas transações (origem e destino)");
             for (Transacao transacao : transacoes) {
                 exibirTransacaoSegura(transacao);
             }
@@ -207,8 +257,21 @@ public class TransacaoController {
      * Exibe dados da transação sem informações sensíveis
      */
     private void exibirTransacaoSegura(Transacao transacao) {
+        String usuarioLogado = loginController.getNomeUsuarioLogado();
+        
+        // Determinar se é transação de entrada ou saída
+        boolean isSaida = conta != null && transacao.getIdContaOrigem() == conta.getIdConta();
+        
         System.out.println("💸 Transação ID: " + transacao.getIdTransacao());
-        System.out.println("💰 Valor: R$ " + transacao.getValor());
+        
+        if (isSaida) {
+            System.out.println("📤 Tipo: Saída (Você enviou)");
+            System.out.println("💰 Valor: -R$ " + transacao.getValor());
+        } else {
+            System.out.println("📥 Tipo: Entrada (Você recebeu)");
+            System.out.println("💰 Valor: +R$ " + transacao.getValor());
+        }
+        
         System.out.println("📅 Data: " + transacao.getData());
         System.out.println("🏦 Conta Origem: " + transacao.getIdContaOrigem());
         System.out.println("🏦 Conta Destino: " + transacao.getIdContaDestino());
